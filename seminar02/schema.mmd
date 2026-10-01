@@ -1,10 +1,67 @@
 erDiagram
-    %% ER-диаграмма вашего объекта. Синтаксис — в seminar02/example/schema.mmd
-    %% Вставьте этот же блок в README.md внутри ```mermaid — GitHub/GitLab отрисуют.
+    ward ||--o{ patient : "содержит"
+    patient ||--o{ patient_sensor : "носит"
+    sensor ||--o{ patient_sensor : "назначается"
+    sensor ||--o{ telemetry : "измеряет"
+    patient ||--o{ event : "генерирует"
+    patient ||--o{ treatment : "проходит"
+    doctor ||--o{ treatment : "проводит"
+    patient ||--o{ document : "имеет"
 
-    thing ||--o{ other_thing : "связь"
-
-    thing {
-        int  id PK
-        text code UK
+    ward {
+        int id PK
+        text code UK "Код палаты"
+        text name
+        text profile
+    }
+    patient {
+        int id PK
+        text insurance_num UK "Полис ОМС"
+        int ward_id FK
+        text full_name
+        date birth_date
+    }
+    sensor {
+        int id PK
+        text serial_num UK
+        text kind "pulse | oxygen | pressure"
+    }
+    patient_sensor {
+        int patient_id PK, FK
+        int sensor_id PK, FK
+        timestamptz valid_from PK
+        timestamptz valid_to "NULL = носит сейчас"
+    }
+    telemetry {
+        int id PK
+        int sensor_id FK
+        timestamptz ts
+        numeric value "check value > 0"
+    }
+    event {
+        int id PK
+        int patient_id FK
+        timestamptz ts
+        text severity "info | warning | critical"
+        text description
+    }
+    doctor {
+        int id PK
+        text tab_no UK
+        text full_name
+        text specialty
+    }
+    treatment {
+        int id PK
+        int patient_id FK
+        int doctor_id FK
+        timestamptz performed_at
+        text diagnosis
+    }
+    document {
+        int id PK
+        int patient_id FK
+        text doc_number UK
+        text doc_type
+        text file_url
     }
